@@ -7,6 +7,7 @@ import numpy as np
 import subprocess
 import fitz  # PyMuPDF
 from docx import Document
+from sentence_transformers import SentenceTransformer
 
 # -------------------- Configuration -------------------- #
 
@@ -47,7 +48,8 @@ vector_store = FAISSVectorStore()
 # -------------------- Embedding and Query Functions -------------------- #
 
 def embed_documents(documents):
-    return np.array([np.random.rand(768) for _ in documents])  # Simulated embeddings
+    model = SentenceTransformer('all-MiniLM-L6-v2')
+    return np.array(model.encode(documents, convert_to_numpy = True))  # Simulated embeddings
 
 conversation_history = []  # Store chat history
 
