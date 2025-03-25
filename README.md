@@ -48,7 +48,7 @@ Smart Ruby Surge is an AI-powered document retrieval and response generation sys
 - **FAISS** – Vector database for similarity search  
 - **Ollama (LLaMA 3.2)** – AI-powered response generation  
 - **SpeechRecognition** – Converts speech to text for video transcription  
-- **Tesseract OCR** – Extracts text from images  
+- **Tesseract OCR** – Extracts text from images(Make sure to download Tesseract from the given link before running - https://github.com/UB-Mannheim/tesseract/wiki)
 - **PyMuPDF & python-docx** – Parses PDFs and DOCX files  
 - **JavaScript** – Reads aloud AI-generated responses  
 
