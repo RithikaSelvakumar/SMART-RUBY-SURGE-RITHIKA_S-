@@ -69,13 +69,13 @@ pip install -r requirements.txt
 #### **LangChain-based Approach**  
 ```bash
 cd langchain  
-python main.py  
+python app.py  
 ```
 
 #### **Non-LangChain Approach**  
 ```bash
 cd without_langchain  
-python main.py  
+streamlit run frontendollama.py 
 ```
 
 ## **Inference**  
