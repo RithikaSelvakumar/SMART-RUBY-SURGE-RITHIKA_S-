@@ -16,3 +16,4 @@ Flask
 pytesseract
 Pillow
 numpy
+sentence-transformers
