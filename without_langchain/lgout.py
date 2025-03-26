@@ -24,14 +24,18 @@ pytesseract.pytesseract.tesseract_cmd = tesseract_path
 class FAISSVectorStore:
     def __init__(self):
         self.index = None  # FAISS index
-        self.documents = []  # Store documents
+        self.documents = []  # Store document chunks
 
     def add_documents(self, texts):
-        vectors = embed_documents(texts)
+        chunked_texts = []
+        for text in texts:
+            chunked_texts.extend(chunk_text(text))  # Split each document into chunks
+
+        vectors = embed_documents(chunked_texts)  # Embed chunked texts
         if self.index is None:
             self.index = faiss.IndexFlatL2(vectors.shape[1])
         self.index.add(vectors)
-        self.documents.extend(texts)
+        self.documents.extend(chunked_texts)  # Store chunked texts
 
     def search(self, query, k=5):
         if not self.documents:
@@ -45,11 +49,24 @@ class FAISSVectorStore:
 
 vector_store = FAISSVectorStore()
 
+# -------------------- Text Chunking -------------------- #
+
+def chunk_text(text, chunk_size=300, overlap=50):
+    """ Splits text into overlapping chunks. """
+    words = text.split()  # Tokenize by words
+    chunks = []
+    
+    for i in range(0, len(words), chunk_size - overlap):
+        chunk = " ".join(words[i:i + chunk_size])
+        chunks.append(chunk)
+    
+    return chunks
+
 # -------------------- Embedding and Query Functions -------------------- #
 
 def embed_documents(documents):
     model = SentenceTransformer('all-MiniLM-L6-v2')
-    return np.array(model.encode(documents, convert_to_numpy = True))  # Simulated embeddings
+    return np.array(model.encode(documents, convert_to_numpy=True))
 
 conversation_history = []  # Store chat history
 
@@ -76,11 +93,10 @@ def generate_answer(query):
             {}
         """.format("\n".join(conversation_history[-5:]), context, query)
 
-
         response = run_llama(prompt)
         conversation_history.append(f"AI: {response}")  # Store response
         return response if response else "Something went wrong."
-
+    
     except Exception as e:
         print(f"Error generating answer: {e}")
         return "I'm having trouble understanding. Could you rephrase?"
@@ -114,7 +130,7 @@ def extract_text_from_pdf(pdf_path):
             text += page.get_text()
         return text.strip()
     except Exception as e:
-        print(f"Error extracting text from PDF(of video or default): {e}")
+        print(f"Error extracting text from PDF: {e}")
         return None
 
 def extract_text_from_docx(docx_path):
